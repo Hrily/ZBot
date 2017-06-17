@@ -17,12 +17,13 @@ public class GameUI implements ZUserInterface{
 
 
     public int currentScreen;
-    TextView[] screens;
     Vector terminatingCharacters; // List of terminating characters for READ operations
     public int version;
 
     public boolean isEOL = false;
     public String input;
+
+    final int INF = 10000;
 
     /*******************************
      *    ZUserInterface methods   *
@@ -117,12 +118,12 @@ public class GameUI implements ZUserInterface{
 
     @Override
     public Dimension getScreenCharacters() {
-        return new Dimension(100, 100);
+        return new Dimension(INF, INF);
     }
 
     @Override
     public Dimension getScreenUnits() {
-        return new Dimension(100, 100);
+        return new Dimension(INF, INF);
     }
 
     @Override
@@ -132,7 +133,7 @@ public class GameUI implements ZUserInterface{
 
     @Override
     public Dimension getWindowSize(int window) {
-        return new Dimension(100, 100);
+        return new Dimension(INF, INF);
     }
 
     @Override
@@ -225,7 +226,7 @@ public class GameUI implements ZUserInterface{
     public int readChar(int time) {
         Log.i("ZUI", "Waiting for readChar");
         try {
-            while (input == null && input.length()!=1)
+            while (input == null || input.length()!=1)
                 Thread.sleep(100);
             int ch = (int) input.charAt(0);
             input = null;

@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">ZBot</string>
+    <string name="game_title_transition_card">game_title_transition_card</string>
+    <string name="game_title_transition_title">game_title_transition_title</string>
+    <string name="lorem_ipsum">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Octavio fuit, cum illam severitatem in eo filio adhibuit, quem in adoptionem D. Si qua in iis corrigere voluit, deteriora fecit. Huius ego nunc auctoritatem sequens idem faciam. Duo Reges: constructio interrete. Egone non intellego, quid sit don Graece, Latine voluptas? Nemo igitur esse beatus potest. </string>
 </resources>
