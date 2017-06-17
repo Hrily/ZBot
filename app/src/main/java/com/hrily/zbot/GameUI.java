@@ -259,7 +259,6 @@ public class GameUI implements ZUserInterface{
 
     @Override
     public String getFilename(String title, String suggested, boolean saveFlag) {
-        // TODO: implement Store and Restore
         return null;
     }
 

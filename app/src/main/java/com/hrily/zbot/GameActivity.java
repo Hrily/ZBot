@@ -285,13 +285,13 @@ public class GameActivity extends AppCompatActivity {
 
     private void speak(String text){
         HashMap<String, String> map = new HashMap<String, String>();
-        map.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "UniqueID");
+        map.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "zbot_tts");
         Bundle params = new Bundle();
         params.putString(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "zbot_tts");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            tts.speak(text, TextToSpeech.QUEUE_FLUSH, params, "zbot_tts");
+            tts.speak(text, TextToSpeech.QUEUE_ADD, params, "zbot_tts");
         }else{
-            tts.speak(text, TextToSpeech.QUEUE_FLUSH, map);
+            tts.speak(text, TextToSpeech.QUEUE_ADD, map);
         }
     }
 
@@ -321,6 +321,13 @@ public class GameActivity extends AppCompatActivity {
 
     private void initGame(){
         gameUI = new GameUI(){
+            @Override
+            public String getFilename(String title, String suggested, boolean saveFlag) {
+                if(suggested != null)
+                    return getFilesDir() + fileName + "_" + suggested + ".zave";
+                return getFilesDir() + fileName + ".zave";
+            }
+
             @Override
             public void setText(String message) {
                 printText(this.currentScreen, message);
