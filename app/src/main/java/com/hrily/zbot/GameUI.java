@@ -15,15 +15,22 @@ import java.util.Vector;
 
 public class GameUI implements ZUserInterface{
 
+    public static int IDLE = 0;
+    public static int READING_LINE = 1;
+    public static int READING_CHAR = 1;
 
     public int currentScreen;
     Vector terminatingCharacters; // List of terminating characters for READ operations
     public int version;
 
     public boolean isEOL = false;
-    public String input;
+    public String input, input_char;
+
+    public boolean isInitialized = true;
 
     final int INF = 10000;
+
+    public int status = IDLE;
 
     /*******************************
      *    ZUserInterface methods   *
@@ -65,6 +72,7 @@ public class GameUI implements ZUserInterface{
             return;
         }
         fatal("Unsupported Story File version.");
+        isInitialized = false;
     }
 
     @Override
@@ -158,14 +166,14 @@ public class GameUI implements ZUserInterface{
 
         s1 = " " + s + " ";
         if (flag) {
-            s2 = " Time: " + a + ":";
+            s2 = " |  Time: " + a + ":";
             if (b < 10)
                 s2 += "0";
             s2 = s2 + b;
             s3 = " ";
         }
         else {
-            s2 = " Score: " + a + " ";
+            s2 = " | Score: " + a + " ";
             s3 = " Turns: " + b + " ";
         }
 
@@ -210,11 +218,13 @@ public class GameUI implements ZUserInterface{
     public int readLine(StringBuffer buffer, int time) {
         Log.i("ZUI", "Waiting for readLine");
         try {
+            status = READING_LINE;
             while(!isEOL) Thread.sleep(100);
             buffer.append(input);
             Log.i("ZUI", "Buffer: " + input);
             input = null;
             isEOL = false;
+            status = IDLE;
             return 10;
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -226,10 +236,12 @@ public class GameUI implements ZUserInterface{
     public int readChar(int time) {
         Log.i("ZUI", "Waiting for readChar");
         try {
-            while (input == null || input.length()!=1)
+            status = READING_CHAR;
+            while (input_char == null || input_char.length()!=1)
                 Thread.sleep(100);
-            int ch = (int) input.charAt(0);
-            input = null;
+            int ch = (int) input_char.charAt(0);
+            input_char = null;
+            status = IDLE;
             return ch;
         }catch (InterruptedException e){
             e.printStackTrace();

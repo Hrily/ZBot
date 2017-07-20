@@ -44,6 +44,7 @@ import com.zaxsoft.zmachine.ZCPU;
 import com.zaxsoft.zmachine.ZUserInterface;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -78,7 +79,7 @@ public class GameActivity extends AppCompatActivity {
     AsyncTask<Void, Void, Void> game;
     Thread cpuThread;
 
-    String title, fileName;
+    String title, fileName, openFileUri;
     boolean botMode = false;
 
     ConversationAdapter adapter;
@@ -97,6 +98,7 @@ public class GameActivity extends AppCompatActivity {
             return;
         title = getIntent().getExtras().getString("title", "null");
         fileName = getIntent().getExtras().getString("fileName", "null");
+        openFileUri = getIntent().getExtras().getString("fileUri", "null");
         titleBar.setText(title);
         adapter = new ConversationAdapter(this);
         LinearLayoutManager llm = new LinearLayoutManager(this);
@@ -104,7 +106,7 @@ public class GameActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(llm);
         recyclerView.setAdapter(adapter);
         setInputHandler();
-        initGame();
+        initGame(openFileUri.equals("null"));
         setupTTS();
         setupSpeechRecognizer();
     }
@@ -121,6 +123,25 @@ public class GameActivity extends AppCompatActivity {
                     return true;
                 }
                 return false;
+            }
+        });
+        input.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if(gameUI.status == GameUI.READING_CHAR){
+                    gameUI.input_char = s.toString();
+//                    input.setText("");
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
             }
         });
     }
@@ -319,7 +340,7 @@ public class GameActivity extends AppCompatActivity {
                         :R.drawable.ic_volume_off);
     }
 
-    private void initGame(){
+    private void initGame(boolean isAssetFile){
         gameUI = new GameUI(){
             @Override
             public String getFilename(String title, String suggested, boolean saveFlag) {
@@ -335,7 +356,15 @@ public class GameActivity extends AppCompatActivity {
         };
         zcpu = new ZCPU(gameUI);
         try {
-            zcpu.initialize(getAssets().open(fileName));
+            if(isAssetFile)
+                zcpu.initialize(getAssets().open(fileName));
+            else {
+                File file = new File(openFileUri);
+                FileInputStream fileInputStream = new FileInputStream(file);
+                zcpu.initialize(fileInputStream);
+            }
+            if(!gameUI.isInitialized)
+                return;
             game = new AsyncTask<Void, Void, Void>() {
                 @Override
                 protected Void doInBackground(Void... params) {
@@ -363,7 +392,6 @@ public class GameActivity extends AppCompatActivity {
                 }
             }
         });
-
     }
 
     public Uri getUri(File file){
